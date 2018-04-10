@@ -1,5 +1,6 @@
 package com.droid.ykozh.photogallery;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -88,6 +91,9 @@ public class PhotoGalleryFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                mPhotoRecyclerView.removeAllViewsInLayout();
                 Log.d(TAG, "QueryTextSubmit: " + s);
                 QueryPreferences.setStoredQuery(getActivity(), s);
                 isNewSearch = true;
@@ -150,7 +156,7 @@ public class PhotoGalleryFragment extends Fragment {
                 int totalItemCount = mPhotoRecyclerView.getLayoutManager().getItemCount();
                 int pastVisiblesItems = ((LinearLayoutManager) mPhotoRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
-                if ((visibleItemCount + pastVisiblesItems) >= totalItemCount && !isLoading) {
+                if ((visibleItemCount + pastVisiblesItems) >= totalItemCount && !isLoading && !isNewSearch) {
                     Log.i(TAG, "Page " + Integer.toString(page));
                     isLoading = true;
                     page++;
